@@ -10,12 +10,27 @@
             "windows-amd64": "server/dist/plugin-windows-amd64.exe"
         }
     },
-    "webapp": {
-        "bundle_path": "webapp/dist/main.js"
-    },
     "settings_schema": {
-        "header": "",
-        "footer": "",
-        "settings": []
+         "settings": [{
+             "key": "Trigger",
+             "display_name": "Trigger Word",
+             "type": "text",
+             "help_text": "Trigger Word must be unique, and cannot begin with a slash or contain any spaces.",
+             "default": "giphy"
+         },{
+             "key": "Rating",
+             "display_name": "MPAA Rating",
+             "type": "text",
+             "help_text": "G, PG, PG-13, R, or NC17",
+             "default": "G"
+         },{
+             "key": "APIKey",
+             "display_name": "API Key",
+             "type": "text",
+             "help_text": "Giphy API key",
+             "default": ""
+         }],
+        "header": "Giphy",
+        "footer": "* To report an issue, make a suggestion or a contribution, [check the repository](https://github.com/levb/mattermost-giphy-plugin)."
     }
 }
