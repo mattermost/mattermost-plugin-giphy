@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/blang/semver"
 	"github.com/gorilla/mux"
@@ -191,11 +192,12 @@ func (p *Plugin) handleShuffle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	post := model.Post{
-		Id:       request.PostId,
-		Type:     model.POST_EPHEMERAL,
-		UserId:   request.UserId,
-		CreateAt: model.GetMillis(),
-		UpdateAt: model.GetMillis(),
+		Id:        request.PostId,
+		Type:      model.POST_EPHEMERAL,
+		UserId:    request.UserId,
+		ChannelId: channelID,
+		CreateAt:  model.GetMillis(),
+		UpdateAt:  model.GetMillis(),
 		Props: map[string]interface{}{
 			"attachments": []*model.SlackAttachment{p.newGiphyAttachment(channelID, queryString, linkURL, embedURL, true)},
 		},
@@ -310,7 +312,7 @@ func (p *Plugin) newGiphyAttachment(channelId, queryString, linkURL, embedURL st
 	}
 
 	a.Actions = []*model.PostAction{
-		&model.PostAction{
+		{
 			Id:   model.NewId(),
 			Name: "Send",
 			Type: model.POST_ACTION_TYPE_BUTTON,
@@ -319,7 +321,7 @@ func (p *Plugin) newGiphyAttachment(channelId, queryString, linkURL, embedURL st
 				Context: context,
 			},
 		},
-		&model.PostAction{
+		{
 			Id:   model.NewId(),
 			Name: "Shuffle",
 			Type: model.POST_ACTION_TYPE_BUTTON,
@@ -328,7 +330,7 @@ func (p *Plugin) newGiphyAttachment(channelId, queryString, linkURL, embedURL st
 				Context: context,
 			},
 		},
-		&model.PostAction{
+		{
 			Id:   model.NewId(),
 			Name: "Cancel",
 			Type: model.POST_ACTION_TYPE_BUTTON,
