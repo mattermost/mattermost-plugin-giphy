@@ -33,8 +33,9 @@
   name = "github.com/gorilla/mux"
   version = "1.6.2"
 
-# [[constraint]]
-#   name = "github.com/mattermost/mattermost-server"
+[[constraint]]
+   name = "github.com/mattermost/mattermost-server"
+   revision = "3ad901b50ba898e778c6e81d787ddc7ab503726f"
 #   version = "5.10.0"
 
 [[constraint]]
