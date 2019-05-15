@@ -130,15 +130,10 @@ func (p *Plugin) handleSend(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Remove the old ephemeral message
-	post := model.Post{
-		Id:     request.PostId,
-		Type:   model.POST_EPHEMERAL,
-		UserId: request.UserId,
-	}
-	p.API.DeleteEphemeralPost(request.UserId, &post)
+	p.API.DeleteEphemeralPost(request.UserId, request.PostId)
 
 	// Create the in-channel post
-	post = model.Post{
+	post := model.Post{
 		UserId:    request.UserId,
 		ChannelId: channelID,
 		Type:      model.POST_DEFAULT,
