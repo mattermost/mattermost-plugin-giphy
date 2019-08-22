@@ -215,12 +215,13 @@ func (p *Plugin) handleCancel(w http.ResponseWriter, r *http.Request) {
 	_, queryString, _, _ := decodeContext(request.Context)
 
 	post := model.Post{
-		Id:       request.PostId,
-		Type:     model.POST_EPHEMERAL,
-		Message:  `Cancelled giphy: "` + queryString + `"`,
-		UserId:   request.UserId,
-		CreateAt: model.GetMillis(),
-		UpdateAt: model.GetMillis(),
+		Id:        request.PostId,
+		ChannelId: request.ChannelId,
+		Type:      model.POST_EPHEMERAL,
+		Message:   `Cancelled giphy: "` + queryString + `"`,
+		UserId:    request.UserId,
+		CreateAt:  model.GetMillis(),
+		UpdateAt:  model.GetMillis(),
 	}
 	// post.AddProp("from_webhook", "true")
 
