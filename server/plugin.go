@@ -8,7 +8,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/blang/semver"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 
@@ -16,38 +15,23 @@ import (
 	"github.com/mattermost/mattermost-server/plugin"
 )
 
-// TODO: require 5.10?
-const (
-	minimumServerVersion = "5.8.0"
-)
+const Command = "giphy"
 
 type Plugin struct {
 	plugin.MattermostPlugin
 	router *mux.Router
 
 	cLock sync.RWMutex
-	cf    *Config
+	cf    Config
 }
 
 type Config struct {
-	Trigger string
-	Rating  string
-	APIKey  string
+	Rating string
+	APIKey string
 }
 
 // OnActivate register the plugin command
 func (p *Plugin) OnActivate() error {
-	// Check server version
-	serverVersion, err := semver.Parse(p.API.GetServerVersion())
-	if err != nil {
-		return errors.Wrap(err, "failed to parse server version")
-	}
-
-	r := semver.MustParseRange(">=" + minimumServerVersion)
-	if !r(serverVersion) {
-		return fmt.Errorf("this plugin requires Mattermost v%s or later", minimumServerVersion)
-	}
-
 	router := mux.NewRouter()
 	s := router.PathPrefix("/api/v1").Subrouter()
 	s.HandleFunc("/send", p.handleSend).Methods("POST")
@@ -55,60 +39,42 @@ func (p *Plugin) OnActivate() error {
 	s.HandleFunc("/cancel", p.handleCancel).Methods("POST")
 	p.router = router
 
-	return nil
-}
-
-func (p *Plugin) OnConfigurationChange() error {
-	oldcf := p.getConfig()
-	newcf := Config{}
-
-	err := p.API.LoadPluginConfiguration(&newcf)
-	if err != nil {
-		return errors.Wrap(err, "Failed to load plugin configuration")
-	}
-
-	if newcf.Trigger == "" {
-		return errors.New("Empty trigger not allowed")
-	}
-	if oldcf.Trigger != "" {
-		err := p.API.UnregisterCommand("", oldcf.Trigger)
-		if err != nil {
-			return errors.Wrap(err, "failed to unregister old command")
-		}
-	}
-	err = p.API.RegisterCommand(&model.Command{
+	err := p.API.RegisterCommand(&model.Command{
 		Description:      "Pours Giphy's secret sauce",
 		DisplayName:      "Giphy",
 		AutoComplete:     true,
 		AutoCompleteDesc: "Unleash the magic of Giphy",
 		AutoCompleteHint: "[search string]",
-		Trigger:          newcf.Trigger,
+		Trigger:          Command,
 	})
 	if err != nil {
-		return errors.Wrap(err, "failed to register new command")
+		return errors.WithMessagef(err, "failed to register /%s command", Command)
+	}
+	return nil
+}
+
+func (p *Plugin) OnConfigurationChange() error {
+	cf := Config{}
+	err := p.API.LoadPluginConfiguration(&cf)
+	if err != nil {
+		return errors.WithMessage(err, "Failed to load plugin configuration")
 	}
 
 	p.cLock.Lock()
-	p.cf = &newcf
+	p.cf = cf
 	p.cLock.Unlock()
-
 	return nil
 }
 
 func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*model.CommandResponse, *model.AppError) {
-	cf := p.getConfig()
-
-	if !strings.HasPrefix(args.Command, "/"+cf.Trigger) {
-		return getErrorCommandResponse("Invalid command: " + args.Command), nil
+	if !strings.HasPrefix(args.Command, "/"+Command) {
+		return respondCommandf("Invalid command: %s", args.Command)
 	}
-	s := strings.TrimSpace(args.Command[len(cf.Trigger)+1:])
+	s := strings.TrimSpace(args.Command[1+len(Command):])
 
-	linkURL, embedURL, err := query(*cf, s)
+	linkURL, embedURL, err := query(p.getConfig(), s)
 	if err != nil {
-		return &model.CommandResponse{
-			ResponseType: model.COMMAND_RESPONSE_TYPE_EPHEMERAL,
-			Text:         "Giphy API error: " + err.Error(),
-		}, nil
+		return respondCommandf("Giphy API error: %v", err)
 	}
 
 	return &model.CommandResponse{
@@ -118,15 +84,10 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 }
 
 func (p *Plugin) handleSend(w http.ResponseWriter, r *http.Request) {
-	request := model.PostActionIntegrationRequestFromJson(r.Body)
+	request, channelID, queryString, linkURL, embedURL := decodePostActionRequest(r)
 	if request == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
-	}
-
-	channelID, queryString, linkURL, embedURL := decodeContext(request.Context)
-	if request.ChannelId != "" {
-		channelID = request.ChannelId
 	}
 
 	// Remove the old ephemeral message
@@ -141,7 +102,6 @@ func (p *Plugin) handleSend(w http.ResponseWriter, r *http.Request) {
 			"attachments": []*model.SlackAttachment{p.newGiphyAttachment(channelID, queryString, linkURL, embedURL, false)},
 		},
 	}
-	// post.AddProp("from_webhook", "true")
 
 	_, err := p.API.CreatePost(&post)
 	if err != nil {
@@ -154,83 +114,70 @@ func (p *Plugin) handleSend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	response := &model.PostActionIntegrationResponse{}
-	_, _ = w.Write(response.ToJson())
+	respondPostActionf(w, "")
 }
 
 func (p *Plugin) handleShuffle(w http.ResponseWriter, r *http.Request) {
-	cf := p.getConfig()
-
-	request := model.PostActionIntegrationRequestFromJson(r.Body)
+	request, channelID, queryString, _, prevEmbedURL := decodePostActionRequest(r)
 	if request == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	channelID, queryString, _, _ := decodeContext(request.Context)
-	if request.ChannelId != "" {
-		channelID = request.ChannelId
-	}
-
-	linkURL, embedURL, err := query(*cf, queryString)
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		response := &model.PostActionIntegrationResponse{
-			EphemeralText: "Giphy API error: " + err.Error(),
+	tryShuffle := func() (done bool) {
+		linkURL, embedURL, err := query(p.getConfig(), queryString)
+		if err != nil {
+			respondPostActionf(w, "Giphy API error: %v", err)
+			return true
 		}
-		_, _ = w.Write(response.ToJson())
-		return
+		if embedURL == prevEmbedURL {
+			return false
+		}
+
+		post := model.Post{
+			Id:        request.PostId,
+			Type:      model.POST_EPHEMERAL,
+			UserId:    request.UserId,
+			ChannelId: channelID,
+			CreateAt:  model.GetMillis(),
+			UpdateAt:  model.GetMillis(),
+			Props: map[string]interface{}{
+				"attachments": []*model.SlackAttachment{p.newGiphyAttachment(channelID, queryString, linkURL, embedURL, true)},
+			},
+		}
+		p.API.UpdateEphemeralPost(request.UserId, &post)
+		return true
 	}
 
-	post := model.Post{
-		Id:        request.PostId,
-		Type:      model.POST_EPHEMERAL,
-		UserId:    request.UserId,
-		ChannelId: channelID,
-		CreateAt:  model.GetMillis(),
-		UpdateAt:  model.GetMillis(),
-		Props: map[string]interface{}{
-			"attachments": []*model.SlackAttachment{p.newGiphyAttachment(channelID, queryString, linkURL, embedURL, true)},
-		},
+	for n := 0; n < 3; n++ {
+		if tryShuffle() {
+			break
+		}
 	}
-	// post.AddProp("from_webhook", "true")
 
-	p.API.UpdateEphemeralPost(request.UserId, &post)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	response := &model.PostActionIntegrationResponse{}
-	_, _ = w.Write(response.ToJson())
+	respondPostActionf(w, "")
 }
 
 func (p *Plugin) handleCancel(w http.ResponseWriter, r *http.Request) {
-	request := model.PostActionIntegrationRequestFromJson(r.Body)
+	request, channelId, queryString, _, _ := decodePostActionRequest(r)
 	if request == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	_, queryString, _, _ := decodeContext(request.Context)
 
 	post := model.Post{
 		Id:        request.PostId,
-		ChannelId: request.ChannelId,
+		ChannelId: channelId,
 		Type:      model.POST_EPHEMERAL,
 		Message:   `Cancelled giphy: "` + queryString + `"`,
 		UserId:    request.UserId,
 		CreateAt:  model.GetMillis(),
 		UpdateAt:  model.GetMillis(),
 	}
-	// post.AddProp("from_webhook", "true")
 
 	p.API.UpdateEphemeralPost(request.UserId, &post)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	response := &model.PostActionIntegrationResponse{}
-	_, _ = w.Write(response.ToJson())
+	respondPostActionf(w, "")
 }
 
 func query(cf Config, s string) (linkURL, embedURL string, err error) {
@@ -272,13 +219,10 @@ func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Req
 	p.router.ServeHTTP(w, r)
 }
 
-func (p *Plugin) getConfig() *Config {
+func (p *Plugin) getConfig() Config {
 	p.cLock.RLock()
 	defer p.cLock.RUnlock()
 
-	if p.cf == nil {
-		return &Config{}
-	}
 	return p.cf
 }
 
@@ -291,7 +235,7 @@ func (p *Plugin) newGiphyAttachment(channelId, queryString, linkURL, embedURL st
 	a := model.SlackAttachment{
 		Title:     queryString,
 		TitleLink: linkURL,
-		Text:      "Posted using [/giphy](https://www.giphy.com)",
+		Text:      fmt.Sprintf("URL: %s\nPosted using [/giphy](https://www.giphy.com). ", linkURL),
 		ImageURL:  embedURL,
 	}
 
@@ -339,21 +283,37 @@ func (p *Plugin) newGiphyAttachment(channelId, queryString, linkURL, embedURL st
 	return &a
 }
 
-func decodeContext(context map[string]interface{}) (channelID, queryString, linkURL, embedURL string) {
-	if context == nil {
-		return "", "", "", ""
+func decodePostActionRequest(r *http.Request) (request *model.PostActionIntegrationRequest, channelID, queryString, linkURL, embedURL string) {
+	request = model.PostActionIntegrationRequestFromJson(r.Body)
+	if request == nil || request.Context == nil {
+		return nil, "", "", "", ""
 	}
+
+	context := request.Context
 	channelID = context["ChannelID"].(string)
 	queryString = context["QueryString"].(string)
 	linkURL = context["LinkURL"].(string)
 	embedURL = context["EmbedURL"].(string)
 
-	return channelID, queryString, linkURL, embedURL
+	if request.ChannelId != "" {
+		channelID = request.ChannelId
+	}
+
+	return request, channelID, queryString, linkURL, embedURL
 }
 
-func getErrorCommandResponse(text string) *model.CommandResponse {
+func respondCommandf(format string, args ...interface{}) (*model.CommandResponse, *model.AppError) {
 	return &model.CommandResponse{
 		ResponseType: model.COMMAND_RESPONSE_TYPE_EPHEMERAL,
-		Text:         text,
+		Text:         fmt.Sprintf(format, args...),
+	}, nil
+}
+
+func respondPostActionf(w http.ResponseWriter, format string, args ...interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	response := &model.PostActionIntegrationResponse{
+		EphemeralText: fmt.Sprintf(format, args...),
 	}
+	_, _ = w.Write(response.ToJson())
 }
