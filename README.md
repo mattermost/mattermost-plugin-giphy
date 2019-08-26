@@ -1,13 +1,13 @@
 # Mattermost Giphy Plugin
 
-This plugin bring the magic of Giphy translate to Mattermost. For a stable production release, please download the latest version [<><>TODO in the Releases tab](https://github.com/mattermost/mattermost-plugin-giphy/releases) and follow [these instructions](#2-configuration) for install and configuration.
+This plugin bring the magic of Giphy translate to Mattermost. For a stable production release, please download the latest version [in the Releases tab](https://github.com/mattermost/mattermost-plugin-giphy/releases) and follow [these instructions](#2-configuration) for install and configuration.
 
 ## Table of Contents
 
  - [1. Users](#1-users).
  - [2. System administrators](#2-system-administrators).
  - [3. Developers](#3-developers).
- - [4. FAQ](#4-faw).
+ - [4. FAQ](#4-frequently-asked-questions-faq).
  - [5. Help](#5-help).
  
 ### Requirements
@@ -25,7 +25,7 @@ Usage:
 ```
 
 For instance, typing `/giphy Hello world!` will display:
-<><>TODO
+
 
 ## 2. System administrators
 
@@ -34,7 +34,7 @@ For instance, typing `/giphy Hello world!` will display:
 
 ## 3. Developers
 
-<><> TODO
+- TODO
 
 Use `make dist` to build distributions of the plugin that you can upload to a Mattermost server.
 Use `make all` to run all checks and build.
