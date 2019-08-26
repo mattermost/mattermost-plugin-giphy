@@ -16,7 +16,7 @@ This plugin bring the magic of Giphy translate to Mattermost. For a stable produ
 
 ## 1. Users
 
-The giphy plugin implements a `/giphy` command which can be used to look and post images for phrases.
+The giphy plugin implements a `/giphy` command which can be used to look up and post images for phrases.
 It uses the [Giphy Translate API](https://developers.giphy.com/docs/api/endpoint#translate).
 
 Usage:
