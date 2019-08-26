@@ -25,7 +25,7 @@ Usage:
 ```
 
 For instance, typing `/giphy Hello world!` will display,
-![image](https://user-images.githubusercontent.com/1187448/63696085-cf806780-c7ce-11e9-9c77-a4fa8c693bf0.png | width=500)
+<img src="https://user-images.githubusercontent.com/1187448/63696085-cf806780-c7ce-11e9-9c77-a4fa8c693bf0.png" width="500"/>
 This is presented only to the user who typed the message and is not posted to the channel, yet.
 
 To get a different image from Giphy, try "Shuffle",
