@@ -16,7 +16,7 @@
              "key": "Rating",
              "display_name": "MPAA Rating",
              "type": "text",
-             "help_text": "G, PG, PG-13, R, or NC17",
+             "help_text": "Y, G, PG, PG-13, R, Unrated, or NSFW",
              "default": "G"
          },{
              "key": "APIKey",
