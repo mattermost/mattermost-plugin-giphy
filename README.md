@@ -25,14 +25,15 @@ Usage:
 ```
 
 For instance, typing `/giphy Hello world!` will display,
-![image](https://user-images.githubusercontent.com/1187448/63696085-cf806780-c7ce-11e9-9c77-a4fa8c693bf0.png)
+![image](https://user-images.githubusercontent.com/1187448/63696085-cf806780-c7ce-11e9-9c77-a4fa8c693bf0.png | width=500)
 This is presented only to the user who typed the message and is not posted to the channel, yet.
 
 To get a different image from Giphy, try "Shuffle",
-![image](https://user-images.githubusercontent.com/1187448/63696144-f0e15380-c7ce-11e9-9949-6aced7b29a51.png)
+![image](https://user-images.githubusercontent.com/1187448/63696144-f0e15380-c7ce-11e9-9949-6aced7b29a51.png | width=500)
 
 To post to the channel, press "Send",
-![image](https://user-images.githubusercontent.com/1187448/63696271-3140d180-c7cf-11e9-8a77-f93c9868e9ae.png)
+![image](https://user-images.githubusercontent.com/1187448/63696271-3140d180-c7cf-11e9-8a77-f93c9868e9ae.png | width=500)
+
 At this point, the image appears in the channel, and all participants see it as a new message from the user.
 
 ## 2. System administrators
