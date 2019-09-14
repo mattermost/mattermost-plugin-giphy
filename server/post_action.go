@@ -25,6 +25,11 @@ func (p *Plugin) InitPostActionRoutes() {
 }
 
 func decodePostActionRequest(r *http.Request) (*model.PostActionIntegrationRequest, *PostActionContext) {
+	mattermostUserId := r.Header.Get("Mattermost-User-Id")
+	if mattermostUserId == "" {
+		return nil, nil
+	}
+
 	request := model.PostActionIntegrationRequestFromJson(r.Body)
 	if request == nil || request.Context == nil {
 		return nil, nil
@@ -105,7 +110,7 @@ func (p *Plugin) handleSend(w http.ResponseWriter, r *http.Request) {
 
 	// Create the in-channel post
 	post := &model.Post{
-		UserId:    request.UserId,
+		UserId:    r.Header.Get("Mattermost-User-Id"),
 		ChannelId: c.ChannelId,
 		RootId:    c.RootId,
 		ParentId:  c.ParentId,
