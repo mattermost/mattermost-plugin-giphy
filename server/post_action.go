@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -15,6 +16,7 @@ type PostActionContext struct {
 	Query     string
 	EmbedURL  string
 	LinkURL   string
+	Secret    string
 }
 
 func (p *Plugin) InitPostActionRoutes() {
@@ -24,27 +26,42 @@ func (p *Plugin) InitPostActionRoutes() {
 	s.HandleFunc("/cancel", p.handleCancel).Methods("POST")
 }
 
-func decodePostActionRequest(r *http.Request) (*model.PostActionIntegrationRequest, *PostActionContext) {
+func (p *Plugin) decodePostActionRequest(r *http.Request) (*model.PostActionIntegrationRequest, *PostActionContext, error) {
 	request := model.PostActionIntegrationRequestFromJson(r.Body)
 	if request == nil || request.Context == nil {
-		return nil, nil
+		return nil, nil, errors.New("invalid request")
 	}
 
 	context := request.Context
+
+	// Validate that this is a legitimate call from the Giphy post
+	rootId, ok := context["RootId"].(string)
+	if !ok {
+		return nil, nil, errors.New("invalid request")
+	}
+	secret, ok := context["Secret"].(string)
+	if !ok {
+		return nil, nil, errors.New("invalid request")
+	}
+	if expected, err := p.store.LoadSecret(rootId); err != nil || secret != expected {
+		return nil, nil, errors.New("invalid request")
+	}
+
 	c := &PostActionContext{
 		ChannelId: context["ChannelId"].(string),
-		RootId:    context["RootId"].(string),
+		RootId:    rootId,
 		ParentId:  context["ParentId"].(string),
 		Query:     context["Query"].(string),
 		EmbedURL:  context["EmbedURL"].(string),
 		LinkURL:   context["LinkURL"].(string),
+		Secret:    secret,
 	}
 
 	if request.ChannelId != "" {
 		c.ChannelId = request.ChannelId
 	}
 
-	return request, c
+	return request, c, nil
 }
 
 func AddPostActions(api plugin.API, sa *model.SlackAttachment, c *PostActionContext) {
@@ -60,6 +77,7 @@ func AddPostActions(api plugin.API, sa *model.SlackAttachment, c *PostActionCont
 		"Query":     c.Query,
 		"EmbedURL":  c.EmbedURL,
 		"LinkURL":   c.LinkURL,
+		"Secret":    c.Secret,
 	}
 
 	sa.Actions = []*model.PostAction{
@@ -94,8 +112,8 @@ func AddPostActions(api plugin.API, sa *model.SlackAttachment, c *PostActionCont
 }
 
 func (p *Plugin) handleSend(w http.ResponseWriter, r *http.Request) {
-	request, c := decodePostActionRequest(r)
-	if request == nil {
+	request, c, err := p.decodePostActionRequest(r)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -128,8 +146,8 @@ func (p *Plugin) handleSend(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *Plugin) handleShuffle(w http.ResponseWriter, r *http.Request) {
-	request, c := decodePostActionRequest(r)
-	if request == nil {
+	request, c, err := p.decodePostActionRequest(r)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -173,8 +191,8 @@ func (p *Plugin) handleShuffle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *Plugin) handleCancel(w http.ResponseWriter, r *http.Request) {
-	request, c := decodePostActionRequest(r)
-	if request == nil {
+	request, c, err := p.decodePostActionRequest(r)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

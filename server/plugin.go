@@ -17,6 +17,9 @@ type Plugin struct {
 
 	cLock sync.RWMutex
 	cf    Config
+
+	// KV store
+	store Store
 }
 
 type Config struct {
@@ -28,6 +31,8 @@ type Config struct {
 func (p *Plugin) OnActivate() error {
 	p.router = mux.NewRouter()
 	p.InitPostActionRoutes()
+
+	p.store = NewStore(p.API)
 
 	err := p.InitCommand()
 	if err != nil {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
 	"strings"
 
@@ -32,6 +33,15 @@ func (p *Plugin) executeCommand(args *model.CommandArgs) (*model.CommandResponse
 		return respondCommandf("Giphy API error: %v", err)
 	}
 
+	token, err := generateToken()
+	if err != nil {
+		return respondCommandf("Internal server error creating a random token: %v", err)
+	}
+	err = p.store.StoreSecret(args.RootId, token)
+	if err != nil {
+		return respondCommandf("Internal server error saving a random token: %v", err)
+	}
+
 	postActionContext := &PostActionContext{
 		ChannelId: args.ChannelId,
 		ParentId:  args.ParentId,
@@ -39,6 +49,7 @@ func (p *Plugin) executeCommand(args *model.CommandArgs) (*model.CommandResponse
 		LinkURL:   linkURL,
 		EmbedURL:  embedURL,
 		Query:     q,
+		Secret:    token,
 	}
 
 	return &model.CommandResponse{
@@ -52,4 +63,13 @@ func respondCommandf(format string, args ...interface{}) (*model.CommandResponse
 		ResponseType: model.COMMAND_RESPONSE_TYPE_EPHEMERAL,
 		Text:         fmt.Sprintf(format, args...),
 	}, nil
+}
+
+func generateToken() (string, error) {
+	randomBytes := make([]byte, 16)
+	_, err := rand.Read(randomBytes)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%x", randomBytes), nil
 }
