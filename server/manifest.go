@@ -7,5 +7,5 @@ var manifest = struct {
 }{
 	Id:      "com.mattermost.giphy-plugin",
 	Version: "0.1.0",
-	Hash:    "4dda7a2",
+	Hash:    "b6f3ff2",
 }
