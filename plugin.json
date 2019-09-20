@@ -26,6 +26,6 @@
              "default": ""
          }],
         "header": "Giphy",
-        "footer": "* To report an issue, make a suggestion or a contribution, [check the repository](https://github.com/levb/mattermost-giphy-plugin)."
+        "footer": "* To report an issue, make a suggestion or a contribution, [check the repository](https://github.com/mattermost/mattermost-plugin-giphy)."
     }
 }
