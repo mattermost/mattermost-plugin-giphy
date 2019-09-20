@@ -1,4 +1,4 @@
-module github.com/levb/mattermost-giphy-plugin/server
+module github.com/mattermost/mattermost-giphy-plugin
 
 go 1.12
 
