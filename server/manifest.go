@@ -5,5 +5,5 @@ var manifest = struct {
 	Version string
 }{
 	Id:      "com.mattermost.giphy-plugin",
-	Version: "0.1.0",
+	Version: "0.1.1",
 }
