@@ -48,6 +48,7 @@ func decodePostActionRequest(r *http.Request) (*model.PostActionIntegrationReque
 	if request.ChannelId != "" {
 		c.ChannelId = request.ChannelId
 	}
+	request.UserId = mattermostUserId
 
 	return request, c
 }
@@ -110,7 +111,7 @@ func (p *Plugin) handleSend(w http.ResponseWriter, r *http.Request) {
 
 	// Create the in-channel post
 	post := &model.Post{
-		UserId:    r.Header.Get("Mattermost-User-Id"),
+		UserId:    request.UserId,
 		ChannelId: c.ChannelId,
 		RootId:    c.RootId,
 		ParentId:  c.ParentId,
