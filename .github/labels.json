@@ -1,0 +1,152 @@
+[
+    {
+        "name": "1: PM Review",
+        "description": "Requires review by a product manager",
+        "color": "006b75"
+    },
+    {
+        "name": "2: Dev Review",
+        "description": "Requires review by two core commiters",
+        "color": "eb6420"
+    },
+    {
+        "name": "2: QA Review",
+        "description": "Requires review by a QA tester. May occur at the same time as Dev Review",
+        "color": "7cdfe2"
+    },
+    {
+        "name": "3: Reviews Complete",
+        "description": "All reviewers have approved the pull request",
+        "color": "0e8a16"
+    },
+    {
+        "name": "Bug",
+        "description": "Bug report/issue",
+        "color": "fff1bc"
+    },
+    {
+        "name": "Changelog/Done",
+        "description": "Required changelog entry has been written",
+        "color": "0e8a16"
+    },
+    {
+        "name": "Changelog/Not Needed",
+        "description": "Does not require a changelog entry",
+        "color": "d4c5f9"
+    },
+    {
+        "name": "Difficulty/1:Easy",
+        "description": "Easy ticket",
+        "color": "c2e0c6"
+    },
+    {
+        "name": "Difficulty/2:Medium",
+        "description": "Medium ticket",
+        "color": "bfdadc"
+    },
+    {
+        "name": "Difficulty/3:Hard",
+        "description": "Hard ticket",
+        "color": "f9d0c4"
+    },
+    {
+        "name": "Do Not Merge/Awaiting PR",
+        "description": "Awaiting another pull request before merging (e.g. server changes)",
+        "color": "a32735"
+    },
+    {
+        "name": "Do Not Merge",
+        "description": "Should not be merged until this label is removed",
+        "color": "a32735"
+    },
+    {
+        "name": "Docs/Done",
+        "description": "Required documentation has been written",
+        "color": "0e8a16"
+    },
+    {
+        "name": "Docs/Needed",
+        "description": "Requires documentation",
+        "color": "b60205"
+    },
+    {
+        "name": "Docs/Not Needed",
+        "description": "Does not require documentation",
+        "color": "d4c5f9"
+    },
+    {
+        "name": "Good First Issue",
+        "description": "Suitable for first-time contributors",
+        "color": "7057ff"
+    },
+    {
+        "name": "Hackfest",
+        "description": "Good for Hackfest",
+        "color": "e99695"
+    },
+    {
+        "name": "Hacktoberfest",
+        "description": "Good for Hacktoberfest",
+        "color": "dc7d02"
+    },
+    {
+        "name": "Help Wanted",
+        "description": "Community help wanted",
+        "color": "159818"
+    },
+    {
+        "name": "Lifecycle/frozen",
+        "description": "frozen",
+        "color": "d3e2f0"
+    },
+    {
+        "name": "Lifecycle/1:stale",
+        "description": "stale",
+        "color": "5319e7"
+    },
+    {
+        "name": "Lifecycle/2:inactive",
+        "description": "inactive",
+        "color": "a34523"
+    },
+    {
+        "name": "Lifecycle/3:orphaned",
+        "description": "orphaned",
+        "color": "111111"
+    },
+    {
+        "name": "Tech/Automation",
+        "description": "Work with test automation tools (cypress)",
+        "color": "63f9c7"
+    },
+    {
+        "name": "Tech/Go",
+        "description": "Work with Go language",
+        "color": "0e8a16"
+    },
+    {
+        "name": "Tech/JavaScript",
+        "description": "Work with JavaScript language",
+        "color": "f9d0c4"
+    },
+    {
+        "name": "Tech/ReactJS",
+        "description": "Web app",
+        "color": "1d76db"
+    },
+    {
+        "name": "Tech/TypeScript",
+        "description": "Work with TypeScript language",
+        "color": "c9ffff"
+    },
+    {
+        "name": "Up For Grabs",
+        "description": "Available to work on",
+        "color": "8b4500"
+    },
+    {
+        "name": "Work In Progress",
+        "description": "Not yet ready for review",
+        "color": "e11d21"
+    }    
+]
