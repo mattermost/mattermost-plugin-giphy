@@ -1,0 +1,9 @@
+name: Enforce PR labels
+on: [pull_request]
+
+  enforce-pr-labels:
+    name: Enforce PR label
+    uses: yogevbd/enforce-label-action@1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VALID_LABELS: "3: Reviews Complete"
