@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 func Query(cf Config, s string) (linkURL, embedURL string, err error) {
 	q := url.Values{}
 	q.Set("api_key", cf.APIKey)
 	q.Set("s", s)
-	q.Set("weirdness", "10")
+	q.Set("weirdness", strconv.Itoa(cf.Weirdness))
 	q.Set("rating", cf.Rating)
 	urlstr := fmt.Sprintf("https://api.giphy.com/v1/gifs/translate?%s", q.Encode())
 
