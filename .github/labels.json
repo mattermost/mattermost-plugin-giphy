@@ -50,14 +50,14 @@
         "color": "f9d0c4"
     },
     {
-        "name": "Do Not Merge",
-        "description": "Should not be merged until this label is removed",
+        "name": "Do Not Merge/Awaiting PR",
+        "description": "Awaiting another pull request before merging (e.g. server changes)",
         "color": "a32735"
     },
     {
-        "name": "Do Not Release",
-        "description": "Should not be tagged for release",
-        "color": "d73a4a"
+        "name": "Do Not Merge",
+        "description": "Should not be merged until this label is removed",
+        "color": "a32735"
     },
     {
         "name": "Docs/Done",
@@ -95,19 +95,24 @@
         "color": "159818"
     },
     {
-        "name": "Needs/Mattermost changes",
-        "description": "Requires changes in the Mattermost platform",
-        "color": "9c14c9"
+        "name": "Lifecycle/frozen",
+        "description": "frozen",
+        "color": "d3e2f0"
     },
     {
-        "name": "Needs/information",
-        "description": "More information is needed from reporter",
-        "color": "9c14c9"
+        "name": "Lifecycle/1:stale",
+        "description": "stale",
+        "color": "5319e7"
     },
     {
-        "name": "Needs/spec",
-        "description": "Better specification is needed from Mattermost",
-        "color": "9c14c9"
+        "name": "Lifecycle/2:inactive",
+        "description": "inactive",
+        "color": "a34523"
+    },
+    {
+        "name": "Lifecycle/3:orphaned",
+        "description": "orphaned",
+        "color": "111111"
     },
     {
         "name": "Tech/Automation",
