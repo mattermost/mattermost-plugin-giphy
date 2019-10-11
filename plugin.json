@@ -24,6 +24,12 @@
              "type": "text",
              "help_text": "Giphy API key",
              "default": ""
+         },{
+             "key": "Weirdness",
+             "display_name": "Weirdness",
+             "type": "text",
+             "help_text": "Set a Value from 0-10 which makes results weirder as you go up the scale. The value determines how `weird` (or random) the GIF suggestions that Giphy will return to an end-user",
+             "default": 10
          }],
         "header": "Giphy",
         "footer": "* To report an issue, make a suggestion or a contribution, [check the repository](https://github.com/mattermost/mattermost-plugin-giphy)."
