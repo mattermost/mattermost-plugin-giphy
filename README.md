@@ -40,7 +40,7 @@ At this point, the image appears in the channel, and all participants see it as 
 
 ## 2. System administrators
 
-1. Go to **System Console > Plugins > Giphy**, and enter your [Giphy API Key](https://developers.giphy.com/faq), and the desired MPAA rating (Y, G, PG, PG-13, R, Unrated, or NSFW).
+1. Go to **System Console > Plugins > Giphy**, and enter your [Giphy API Key](https://developers.giphy.com/faq), the desired MPAA rating (Y, G, PG, PG-13, R, Unrated, or NSFW), and the weirdness (randomness) of GIF suggestions (0-10 values)
 2. Go to **System Console > Plugins > Management** and click **Enable** to enable the Giphy plugin.
 
 ## 3. Developers
