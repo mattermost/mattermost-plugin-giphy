@@ -55,8 +55,7 @@ func decodePostActionRequest(r *http.Request) (*model.PostActionIntegrationReque
 
 func AddPostActions(api plugin.API, sa *model.SlackAttachment, c *PostActionContext) {
 	actionURL := func(action string) string {
-		return fmt.Sprintf("%s/plugins/%s/api/v1/%s", *api.GetConfig().ServiceSettings.SiteURL,
-			manifest.Id, action)
+		return fmt.Sprintf("/plugins/%s/api/v1/%s", manifest.Id, action)
 	}
 
 	context := map[string]interface{}{
