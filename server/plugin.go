@@ -20,8 +20,8 @@ type Plugin struct {
 }
 
 type Config struct {
-	Rating string
-	APIKey string
+	Rating    string
+	APIKey    string
 	Weirdness int
 }
 
