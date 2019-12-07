@@ -63,11 +63,11 @@ Mattermost.
 
 ### 2. Configure the plugin
 
-1. Go to **System Console > Plugins > Giphy**, and enter your [Giphy API
-Key](https://developers.giphy.com/faq), the desired MPAA rating (Y, G, PG,
-PG-13, R, Unrated, or NSFW), and the weirdness value (randomness) of GIF
-suggestions (0-10 values)
-2. Go to **System Console > Plugins > Management** and click **Enable** to
+- Go to **System Console > Plugins > Giphy**, and enter your [Giphy API
+  Key](https://developers.giphy.com/faq), the desired MPAA rating (Y, G, PG,
+  PG-13, R, Unrated, or NSFW), and the weirdness value (randomness) of GIF
+  suggestions (a 0-10 value)
+- Go to **System Console > Plugins > Management** and click **Enable** to
    enable the Giphy plugin.
 
 ## 3. Developers
