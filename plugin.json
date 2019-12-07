@@ -3,7 +3,7 @@
     "name": "Giphy Plugin",
     "description": "This plugin brings the powers of Giphy to Mattermost.",
     "version": "0.1.1",
-    "min_server_version": "5.12.0",
+    "min_server_version": "5.16.0",
     "server": {
         "executables": {
             "linux-amd64": "server/dist/plugin-linux-amd64",
