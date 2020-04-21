@@ -1,3 +1,5 @@
+## NOTE: This repository is not longer maintained. Please use https://github.com/moussetc/mattermost-plugin-giphy instead.
+
 # Mattermost Giphy Plugin
 
 This plugin bring the magic of Giphy translate to Mattermost. For a stable production release, please download the latest version [in the Releases tab](https://github.com/mattermost/mattermost-plugin-giphy/releases) and follow [these instructions](#2-configuration) for install and configuration.
